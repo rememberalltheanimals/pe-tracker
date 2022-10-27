@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <title>PE Tracker</title>
+ <meta charset="UTF-8">
+</head>
+<body>
+ <h1>Hello World!</h1>
+ <% buttons.forEach(function(b) { %>
+  <button id="<%= b.id %>" onclick="javascript:send(<%= b.id %>);">
+   <%= b.name %>
+  </button>
+<% }); %>
+ <p id="output"></p>
+ <script>
+const output = document.getElementById("output");
+const send = async function(buttonId) {
+const response = await fetch("/log", {
+  method: "POST",
+  headers: {
+    "Accept": "application/json",
+    "Content-Type": "application/json" 
+ },
+ body: JSON.stringify({
+  id: buttonId
+ })
+ });
+ const result = await response.json();
+ if (result.error) {
+  output.innerHTML = `<strong>ERROR: ${result.error.routine}</strong>`;
+}
+else {
+  output.innerHTML = `Created button ${result.newId.new_id} at ${result.when.localtime}. Refresh to view them all!`;
+}
+};
+ </script>
+</body>
+</html>
