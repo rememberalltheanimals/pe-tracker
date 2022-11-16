@@ -5,14 +5,46 @@
  <meta charset="UTF-8">
 </head>
 <body>
- <h1>Hello World!</h1>
- <% buttons.forEach(function(b) { %>
-  <button id="<%= b.id %>" onclick="javascript:send(<%= b.id %>);">
-   <%= b.name %>
-  </button>
-<% }); %>
+ <h1>Observer's Counter</h1>
+
+ <h2 id="counter">(..)</h2>
+ <div>
+  <button id="<%= praise %>" onclick="javascript:send(<%= praise %>);">Praise</button>
+  <button id="<%= criticize %>" onclick="javascript:send(<%= criticize %>);">Criticize</button>
+  <button id="<%= reset %>">Reset</button>
+</div>
+
  <p id="output"></p>
+
  <script>
+
+const counter = document.getElementById("counter");
+const praise = document.getElementById("praise");
+const criticize = document.getElementById("criticize");
+const reset = document.getElementById("reset");
+
+let count = 0;
+
+countDisplay();
+
+praise.onclick = () => {
+  count++;
+  countDisplay();
+};
+
+criticize.onclick = () => {
+  count--;
+  countDisplay();
+};
+
+reset.onclick = () => {
+  count = 0;
+};
+
+function countDisplay(){
+  counter.innerHTML = count;
+};
+
 const output = document.getElementById("output");
 const send = async function(buttonId) {
 const response = await fetch("/log", {
@@ -30,7 +62,7 @@ const response = await fetch("/log", {
   output.innerHTML = `<strong>ERROR: ${result.error.routine}</strong>`;
 }
 else {
-  output.innerHTML = `Created button ${result.newId.new_id} at ${result.when.localtime}. Refresh to view them all!`;
+  output.innerHTML = `Counting each button hit ${result.newId.new_id}. Refresh to reset the counts`;
 }
 };
  </script>
