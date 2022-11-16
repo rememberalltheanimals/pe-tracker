@@ -1,4 +1,5 @@
 require("dotenv").config(); // Read environment variables from .env
+
 const express = require("express");
 const path = require("path");
 const PORT = process.env.PORT || 5163;
@@ -20,12 +21,15 @@ express()
  .get("/", async(req, res) => {
     try {
       const client = await pool.connect();
-      const buttonSql = "SELECT * FROM buttons ORDER By id ASC;";
-      const buttons = await client.query(buttonSql);
+      const countSql = "SELECT * FROM counts ORDER By id ASC;";
+      const counts = await client.query(countSql);
+
       const args = {
-        "buttons": buttons ? buttons.rows : null
+        "counts": counts ? counts.rows : null
       };
+      
       res.render("pages/index", args); 
+      
     } 
     catch (err) {
       console.error(err);
@@ -45,19 +49,30 @@ express()
     try {
       const client = await pool.connect();
       const id = req.body.id;
-      const insertSql = `INSERT INTO buttons (name)
-        VALUES (concat('Child of ', $1::text))
-        RETURNING id AS new_id;`;
-      const selectSql = "SELECT LOCALTIME;";
+      const insertPraiseSql = `INSERT INTO counts (praise_counts)
+        VALUES ('praise')`;
 
-      const insert = await client.query(insertSql, [id]);
-      const select = await client.query(selectSql);
+      const insertCriticizeSql = `INSERT INTO counts (criticize_counts)
+        VALUES ('criticize')`;
 
-      const response = {
-        newId: insert ? insert.rows[0] : null,
-        when: select ? select.rows[0] : null
+      const praise_insert = await client.query(insertPraiseSql, [id]);
+      const praise_select = await client.query(praise_selectSql);
+
+      const criticize_insert = await client.query(insertCriticizeSql, [id]);
+      const criticize_select = await client.query(criticize_selectSql);
+
+      const praise_response = {
+        newId: praise_insert ? praise_insert.rows[0] : null,
+        when: praise_select ? praise_select.rows[0] : null
       };
-      res.json(response);
+      res.json(praise_response);
+      client.release();
+
+      const criticize_response = {
+        newId: criticize_insert ? criticize_insert.rows[0] : null,
+        when: criticize_select ? criticize_select.rows[0] : null
+      };
+      res.json(criticize_response);
       client.release();
     }
     catch (err) {
