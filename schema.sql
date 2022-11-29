@@ -1,10 +1,9 @@
 CREATE TABLE counts (
  id SERIAL PRIMARY KEY,
- praise_counts INT NOT NULL
+ praise_counts INT NOT NULL,
  criticize_counts INT NOT NULL
 );
 
-INSERT INTO counts (praise_counts) VALUES ('praise');
+INSERT INTO counts (praise_counts, criticize_counts) VALUES (0, 0);
 
-INSERT INTO counts (criticize_counts) VALUES ('criticize');
-
+UPDATE counts SET praise_counts = praise_counts +1;
